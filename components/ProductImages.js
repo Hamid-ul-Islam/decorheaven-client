@@ -1,13 +1,22 @@
 import styled from "styled-components";
-import {useState} from "react";
+import { useState } from "react";
+import {
+  Magnifier,
+  GlassMagnifier,
+  SideBySideMagnifier,
+  PictureInPictureMagnifier,
+  MOUSE_ACTIVATION,
+  TOUCH_ACTIVATION,
+} from "react-image-magnifiers";
 
 const Image = styled.img`
-    max-width: 100%;
-    max-height: 100%;
+    width: 60px;
+    height: 60px;
   `;
+
 const BigImage = styled.img`
-  max-width: 100%;
-  min-width: 100%;
+  background-size: cover;
+  width: 100%;
   height: 100%;
 `;
 const ImageButtons = styled.div`
@@ -23,7 +32,7 @@ const ImageButton = styled.div`
     ` : `
       border-color: transparent;
     `}
-    height: 40px;
+    height: 60px;
     padding: 2px;
     cursor: pointer;
     border-radius: 5px;
@@ -37,15 +46,23 @@ export default function ProductImages({images}) {
   return (
     <>
       <BigImageWrapper>
-        <BigImage src={activeImage} />
+        {/* <BigImage src={activeImage} /> */}
+        <SideBySideMagnifier
+          alwaysInPlace
+          transitionSpeed="0.1"
+          inPlaceMinBreakpoint
+          imageSrc={activeImage}
+          imageAlt="Example"
+        />
       </BigImageWrapper>
       <ImageButtons>
-        {images.map(image => (
+        {images.map((image) => (
           <ImageButton
             key={image}
-            active={image===activeImage}
-            onClick={() => setActiveImage(image)}>
-            <Image src={image} alt=""/>
+            active={image === activeImage}
+            onClick={() => setActiveImage(image)}
+          >
+            <Image src={image} alt="" />
           </ImageButton>
         ))}
       </ImageButtons>

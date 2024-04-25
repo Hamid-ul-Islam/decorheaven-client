@@ -16,6 +16,7 @@ const ColumnsWrapper = styled.div`
   }
   gap: 40px;
   margin-top: 40px;
+  margin-bottom: 40px;
 `;
 
 const Box = styled.div`
@@ -70,6 +71,15 @@ const CityHolder = styled.div`
   gap: 5px;
 `;
 
+const Select = styled.select`
+  width: 100%;
+  padding: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  box-sizing: border-box;
+  outline: none;
+`;
+
 export default function CartPage() {
   const { cartProducts, addProduct, removeProduct, clearCart } =
     useContext(CartContext);
@@ -80,7 +90,7 @@ export default function CartPage() {
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
-  const [country, setCountry] = useState("");
+  const [cashOn, setCashOn] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   useEffect(() => {
     if (cartProducts.length > 0) {
@@ -107,29 +117,40 @@ export default function CartPage() {
     removeProduct(id);
   }
 
+  const removeFromCart = (id) => {
+    const carts = cartProducts.filter((product) => product._id !== id);
+    removeProduct(id);
+  };
+
   let total = 0;
   for (const productId of cartProducts) {
     const price = products.find((p) => p._id === productId)?.price || 0;
     total += price;
   }
   async function goToPayment() {
+    if (cashOn) {
+    }
     const response = await axios.post("/api/checkout", {
       name,
       email,
       city,
       postalCode,
       streetAddress,
-      country,
       cartProducts,
       phone,
       total,
     });
+    if (cashOn) {
+      setIsSuccess(true);
+      return;
+    }
     if (response.data.url) {
       window.location = response.data.url;
     }
   }
 
   if (isSuccess) {
+    clearCart();
     return (
       <>
         <Header />
@@ -188,6 +209,11 @@ export default function CartPage() {
                         $
                         {cartProducts.filter((id) => id === product._id)
                           .length * product.price}
+                      </td>
+                      <td>
+                        <Button onClick={() => removeFromCart(product._id)}>
+                          Remove
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -248,6 +274,10 @@ export default function CartPage() {
                 name="streetAddress"
                 onChange={(ev) => setStreetAddress(ev.target.value)}
               />
+              <Select onChange={(e) => setCashOn(e.target.value)}>
+                <option value={true}>Cash on delivery</option>
+                <option value={false}>Card Payment</option>
+              </Select>
               <Button black block onClick={goToPayment}>
                 Continue to payment
               </Button>

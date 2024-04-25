@@ -53,6 +53,7 @@ export default async function handler(req, res) {
     streetAddress,
     country,
     paid: false,
+    retruned: false,
   });
 
   const session = await stripe.checkout.sessions.create({
